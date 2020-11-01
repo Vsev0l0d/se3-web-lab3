@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Lab 3</title>
+    <ui:include src="templates/head.xhtml" />
+</h:head>
+<h:body>
+    <ui:include src="templates/header.xhtml" />
+
+    <div class="row">
+        <div id="chart"></div>
+
+        <div>
+            <h:form>
+                <h:button outcome="to_index" value="To start page" class="btn btn-dark my-2 mx-2"/>
+            </h:form>
+
+            <h:form id="newEntryForm" class="border border-secondary rounded-lg my-2 mx-2">
+                <h:panelGrid columns="3" class="my-2 mx-2">
+                    <h:outputLabel id="labelX" for="X_field" class="input-group-text">X:</h:outputLabel>
+                    <h:inputText class="form-control" id="X_field" maxlength="8" required="true" value="#{mainBean.newEntry.x}"
+                                 requiredMessage="Value is required."
+                                 converterMessage="Value must be a number."
+                                 validatorMessage="Value must be a number between -5 and 5.">
+                        <f:validateDoubleRange minimum="-5" maximum="5" />
+                        <f:ajax event="change" render="messageX" />
+                    </h:inputText>
+                    <h:message id="messageX" for="X_field" class="alert alert-primary"/>
+                    <h:column/>
+                    <p:slider for="X_field" minValue="-5" maxValue="5" step="1" />
+                </h:panelGrid>
+
+                <h:panelGrid columns="3" class="my-2 mx-2">
+                    <h:outputLabel id="labelY" for="Y_field" class="input-group-text">Y:</h:outputLabel>
+                    <h:inputText class="form-control" id="Y_field" maxlength="8" required="true" value="#{mainBean.newEntry.y}"
+                                 requiredMessage="Value is required."
+                                 converterMessage="Value must be a number."
+                                 validatorMessage="Value must be a number between -3 and 5.">
+                        <f:validateDoubleRange minimum="-3" maximum="5" />
+                        <f:ajax event="change" render="messageY" />
+                    </h:inputText>
+                    <h:message id="messageY" for="Y_field" class="alert alert-primary" />
+                </h:panelGrid>
+
+                <h:panelGrid columns="3" class="my-2 mx-2">
+                    <h:outputLabel id="labelR" for="R_field" class="input-group-text">R:</h:outputLabel>
+                    <h:inputText class="form-control" id="R_field" maxlength="8" required="true" value="#{mainBean.newEntry.r}"
+                                 requiredMessage="Value is required."
+                                 converterMessage="Value must be a number."
+                                 validatorMessage="Value must be a number between 1 and 4.">
+                        <f:validateDoubleRange minimum="1" maximum="4" />
+                        <f:ajax event="change" render="messageR" />
+                    </h:inputText>
+                    <h:message id="messageR" for="R_field" class="alert alert-primary" />
+                </h:panelGrid>
+
+                <h:commandButton value="Send data" action="#{mainBean.addEntry}" class="btn btn-dark my-2 mx-2">
+                    <f:ajax execute="@form" render="messageR messageY messageX entriesTable" />
+                </h:commandButton>
+            </h:form>
+        </div>
+    </div>
+
+    <h:panelGroup id="entriesTable">
+        <h:dataTable value="#{mainBean.entries}" var="entry" class="table table-hover table-dark my-2">
+            <h:column>
+                <f:facet name="header">X</f:facet>
+                #{entry.x}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Y</f:facet>
+                #{entry.y}
+            </h:column>
+            <h:column>
+                <f:facet name="header">R</f:facet>
+                #{entry.r}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Result</f:facet>
+                #{entry.result}
+            </h:column>
+        </h:dataTable>
+    </h:panelGroup>
+    <h:outputScript library="javascript" name="interactiveObject.js"/>
+</h:body>
+</html>
