@@ -7,10 +7,11 @@ const width = canvas.width;
 const height = canvas.height;
 const blue = "#b8daff";
 
-function paintPlot() {
+function paintPlot(R) {
     let rad = height / 40;
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, width, height);
+
     ctx.fillStyle = blue;
     ctx.fillRect(width / 2, height / 2, 2 / 6 * width, - 1 / 6 * height);
     ctx.beginPath();
@@ -24,22 +25,23 @@ function paintPlot() {
     ctx.lineTo(width / 2, 4 / 6 * height);
     ctx.lineTo(width / 2, height / 2);
     ctx.fill();
+
     ctx.fillStyle = "black";
     canvas_arrow(ctx, width / 2, height - rad, width / 2, rad);
     canvas_arrow(ctx, rad, height / 2, width - rad, height / 2);
     ctx.fillText("X", Number(width) - rad - 5, height / 2 - rad);
     ctx.fillText("Y", width / 2 + rad, rad + 5);
-    let R = 1;
-    addMark(-R.toFixed(3), width / 2, 5 / 6 * height);
-    addMark((-R/2).toFixed(3), width / 2, 4 / 6 * height);
-    addMark((R/2).toFixed(3), width / 2, 2 / 6 * height);
-    addMark(R.toFixed(3), width / 2, 1 / 6 * height);
-    addMark((R/2).toFixed(3), 4 / 6 * width, height / 2);
-    addMark(R.toFixed(3), 5 / 6 * width, height / 2);
-    addMark((-R/2).toFixed(3), 2 / 6 * width, height / 2);
-    addMark(-R.toFixed(3), 1 / 6 * width, height / 2);
 
-    paintPoints(1);
+    if (!(isFinite(R) || R == null)){
+        addMark(-R.toFixed(3), width / 2, 5 / 6 * height);
+        addMark((-R/2).toFixed(3), width / 2, 4 / 6 * height);
+        addMark((R/2).toFixed(3), width / 2, 2 / 6 * height);
+        addMark(R.toFixed(3), width / 2, 1 / 6 * height);
+        addMark((R/2).toFixed(3), 4 / 6 * width, height / 2);
+        addMark(R.toFixed(3), 5 / 6 * width, height / 2);
+        addMark((-R/2).toFixed(3), 2 / 6 * width, height / 2);
+        addMark(-R.toFixed(3), 1 / 6 * width, height / 2);
+    }
 
     function addMark(label, x, y) {
         if (x === width / 2) {
@@ -73,6 +75,7 @@ function paintPlot() {
         ctx.stroke();
     }
 }
+
 function paintPoint(x, y, color){
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -107,7 +110,7 @@ function paintPoints(r) {
 }
 
 function clickOnCanvas(event) {
-    paintPlot()
+    repaintPlot()
     // if (curr_R == null) {
     //     // document.getElementById("messageR").innerHTML = "Value is required.";
     // } else {
@@ -124,22 +127,23 @@ function clickOnCanvas(event) {
     //     // hiddenForm[hiddenForm.id + ":submitCanvas"].click();
     // }
 }
-function checkR(){
-
+function getR(){
+    // if (form[form.id + ":R_field"].checked === true) {
+    //     return form[form.id + ":R_field"].value;
+    // }
+    // // form[form.id + ":messageR"].appendChild("Value is required.");
+    return null;
 }
 
 function repaintPlot() {
-    paintPlot();
-    // Array.prototype.forEach.call(form[form.id + ":r"], function (elem) {
-    //     if (elem.checked === true) {
-    //         curr_R = elem.value;
-    //     }
-    // });
-    // if (curr_R != null)
-    //     addDots(Number(curr_R), JSON.parse(document.getElementById("history").innerHTML));
+    let r = getR();
+    console.log(r);
+    paintPlot(r);
+    if (r != null) paintPoints(r);
 }
 
 {
     document.getElementById("canvas").onclick = clickOnCanvas;
+    // document.getElementById("entriesTable").onchange = repaintPlot;
     repaintPlot();
 }
