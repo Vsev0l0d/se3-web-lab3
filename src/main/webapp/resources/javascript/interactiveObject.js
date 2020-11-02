@@ -7,7 +7,8 @@ const width = canvas.width;
 const height = canvas.height;
 const blue = "#b8daff";
 
-function paintPlot(R) {
+function redraw() {
+    let R = getR();
     let rad = height / 40;
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, width, height);
@@ -32,7 +33,7 @@ function paintPlot(R) {
     ctx.fillText("X", Number(width) - rad - 5, height / 2 - rad);
     ctx.fillText("Y", width / 2 + rad, rad + 5);
 
-    if (R != null && isFinite(R)){
+    if (R != null && isFinite(R) && R >= 1 && R <= 4){
         addMark((-R).toFixed(3), width / 2, 5 / 6 * height);
         addMark((-R/2).toFixed(3), width / 2, 4 / 6 * height);
         addMark((R/2).toFixed(3), width / 2, 2 / 6 * height);
@@ -41,46 +42,42 @@ function paintPlot(R) {
         addMark(R.toFixed(3), 5 / 6 * width, height / 2);
         addMark((-R/2).toFixed(3), 2 / 6 * width, height / 2);
         addMark((-R).toFixed(3), 1 / 6 * width, height / 2);
-    }
 
-    function addMark(label, x, y) {
-        if (x === width / 2) {
-            ctx.beginPath();
-            ctx.moveTo(x - rad / 2, y);
-            ctx.lineTo(x + rad / 2, y);
-            ctx.stroke();
-            ctx.fillText(label, x + rad, y);
-        }
-        if (y === height / 2) {
-            ctx.beginPath();
-            ctx.moveTo(x, y - rad / 2);
-            ctx.lineTo(x, y + rad / 2);
-            ctx.stroke();
-            ctx.fillText(label, x, y - rad);
-        }
-    }
-
-    function canvas_arrow(context, fromx, fromy, tox, toy) {
-        let headlen = 5; // length of head in pixels
-        let dx = tox - fromx;
-        let dy = toy - fromy;
-        let angle = Math.atan2(dy, dx);
-
-        ctx.beginPath();
-        context.moveTo(fromx, fromy);
-        context.lineTo(tox, toy);
-        context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
-        context.moveTo(tox, toy);
-        context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
-        ctx.stroke();
+        paintPoints(R);
     }
 }
 
-function paintPoint(x, y, color){
-    ctx.fillStyle = color;
+function addMark(label, x, y) {
+    let rad = height / 40;
+    if (x === width / 2) {
+        ctx.beginPath();
+        ctx.moveTo(x - rad / 2, y);
+        ctx.lineTo(x + rad / 2, y);
+        ctx.stroke();
+        ctx.fillText(label, x + rad, y);
+    }
+    if (y === height / 2) {
+        ctx.beginPath();
+        ctx.moveTo(x, y - rad / 2);
+        ctx.lineTo(x, y + rad / 2);
+        ctx.stroke();
+        ctx.fillText(label, x, y - rad);
+    }
+}
+
+function canvas_arrow(context, fromx, fromy, tox, toy) {
+    let headlen = 5; // length of head in pixels
+    let dx = tox - fromx;
+    let dy = toy - fromy;
+    let angle = Math.atan2(dy, dx);
+
     ctx.beginPath();
-    ctx.arc(x, y, 3, 0, 2 * Math.PI);
-    ctx.fill();
+    context.moveTo(fromx, fromy);
+    context.lineTo(tox, toy);
+    context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+    context.moveTo(tox, toy);
+    context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+    ctx.stroke();
 }
 
 function getPoints() {
@@ -92,55 +89,64 @@ function getPoints() {
         for (let i = 0; i < cells.length; i++) {
             point.set(headers[i], cells[i]);
         }
-        points.push(point);
+        if (cells.length !== 0) points.push(point);
     });
     return points;
 }
 
-function paintPoints(r) {
+function paintPoints(R) {
     getPoints().forEach(function (point) {
-        if (!(point.get('X') === "" || point.get('Y') === "")){
-            let x = width / 2 + Number(point.get('X')) * Math.round(width / 3) / Number(r);
-            let y = height / 2 - Number(point.get('Y')) * Math.round(height / 3) / Number(r);
-            if (point.get('Result') === "true"){
+        if (!Array.from(point.values()).includes("")){
+            let x = width / 2 + Number(point.get('X')) * Math.round(width / 3)  / Number(R);
+            let y = height / 2 - Number(point.get('Y')) * Math.round(height / 3) / Number(R);
+            if (checkHit(Number(point.get('X')), Number(point.get('Y')), R)){
                 paintPoint(x, y, "black")
             } else paintPoint(x, y, "red");
         }
     });
 }
 
-function clickOnCanvas(event) {
-    repaintPlot()
-    // if (curr_R == null) {
-    //     // document.getElementById("messageR").innerHTML = "Value is required.";
-    // } else {
-    //     const x = event.pageX - (canvas.getBoundingClientRect().left + pageXOffset);
-    //     const y = event.pageY - (canvas.getBoundingClientRect().top + pageYOffset);
-    //
-    //     const cordX = (x - width / 2) * Number(curr_R) / Math.round(width / 3);
-    //     const cordY = (height / 2 - y) * Number(curr_R) / Math.round(height / 3);
-    //
-    //     //fill hidden form
-    //     // hiddenForm[hiddenForm.id + ":x_canv"].value = cordX;
-    //     // hiddenForm[hiddenForm.id + ":y_canv"].value = cordY;
-    //     // hiddenForm[hiddenForm.id + ":r_canv"].value = curr_R;
-    //     // hiddenForm[hiddenForm.id + ":submitCanvas"].click();
-    // }
+function paintPoint(x, y, color){
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, 2 * Math.PI);
+    ctx.fill();
 }
+
+function checkHit(x, y, r) {
+    if ((y === 0 && Math.abs(x) <= r) || (x === 0 && Math.abs(y) <= r / 2)) return  true;
+    if ((x < 0) && (y < 0)) return  y >= - (r / 2) - (x / 2);
+    if ((x > 0) && (y > 0)) return (x <= r) && (y <= r / 2);
+    if ((x > 0) && (y < 0)) return  x * x + y * y <= (r * r) / 4;
+    if ((x < 0) && (y > 0)) return false;
+}
+
 function getR(){
     let R = parseFloat(form[form.id + ":R_field"].value);
     if (isNaN(R)) R = null;
     return R;
 }
 
-function repaintPlot() {
+function clickOnCanvas(event) {
     let r = getR();
-    paintPlot(r);
-    if (r != null) paintPoints(r);
+    if (r == null) {
+        form[form.id + ":R_field"].focus();
+    } else {
+        const x = event.pageX - (canvas.getBoundingClientRect().left + pageXOffset);
+        const y = event.pageY - (canvas.getBoundingClientRect().top + pageYOffset);
+
+        const cordX = ((x - width / 2) * Number(r) / Math.round(width / 3)).toFixed(3);
+        const cordY = ((height / 2 - y) * Number(r) / Math.round(height / 3)).toFixed(3);
+
+        form[form.id + ":X_field"].value = cordX;
+        form[form.id + ":Y_field"].value = cordY;
+        form[form.id + ":R_field"].value = r;
+        form[form.id + ":submitButton"].click();
+    }
 }
 
 {
     document.getElementById("canvas").onclick = clickOnCanvas;
-    // document.getElementById("entriesTable").ontimeupdate = repaintPlot;
-    repaintPlot();
+    form[form.id + ":R_field"].oninput = redraw;
+    redraw();
 }

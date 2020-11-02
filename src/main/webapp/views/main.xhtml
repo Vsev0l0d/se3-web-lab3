@@ -60,8 +60,8 @@
                     <h:message id="messageR" for="R_field" class="alert alert-primary" />
                 </h:panelGrid>
 
-                <h:commandButton value="Send data" action="#{mainBean.addEntry}" class="btn btn-dark my-2 mx-2">
-                    <f:ajax execute="@form" render="messageR messageY messageX entriesTable" />
+                <h:commandButton id="submitButton" value="Send data" action="#{mainBean.addEntry}" class="btn btn-dark my-2 mx-2">
+                    <f:ajax execute="@form" render="messageR messageY messageX entriesTable" onevent="redraw"/>
                 </h:commandButton>
             </h:form>
         </div>
