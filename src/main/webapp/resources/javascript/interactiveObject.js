@@ -32,15 +32,15 @@ function paintPlot(R) {
     ctx.fillText("X", Number(width) - rad - 5, height / 2 - rad);
     ctx.fillText("Y", width / 2 + rad, rad + 5);
 
-    if (!(isFinite(R) || R == null)){
-        addMark(-R.toFixed(3), width / 2, 5 / 6 * height);
+    if (R != null && isFinite(R)){
+        addMark((-R).toFixed(3), width / 2, 5 / 6 * height);
         addMark((-R/2).toFixed(3), width / 2, 4 / 6 * height);
         addMark((R/2).toFixed(3), width / 2, 2 / 6 * height);
         addMark(R.toFixed(3), width / 2, 1 / 6 * height);
         addMark((R/2).toFixed(3), 4 / 6 * width, height / 2);
         addMark(R.toFixed(3), 5 / 6 * width, height / 2);
         addMark((-R/2).toFixed(3), 2 / 6 * width, height / 2);
-        addMark(-R.toFixed(3), 1 / 6 * width, height / 2);
+        addMark((-R).toFixed(3), 1 / 6 * width, height / 2);
     }
 
     function addMark(label, x, y) {
@@ -128,22 +128,19 @@ function clickOnCanvas(event) {
     // }
 }
 function getR(){
-    // if (form[form.id + ":R_field"].checked === true) {
-    //     return form[form.id + ":R_field"].value;
-    // }
-    // // form[form.id + ":messageR"].appendChild("Value is required.");
-    return null;
+    let R = parseFloat(form[form.id + ":R_field"].value);
+    if (isNaN(R)) R = null;
+    return R;
 }
 
 function repaintPlot() {
     let r = getR();
-    console.log(r);
     paintPlot(r);
     if (r != null) paintPoints(r);
 }
 
 {
     document.getElementById("canvas").onclick = clickOnCanvas;
-    // document.getElementById("entriesTable").onchange = repaintPlot;
+    // document.getElementById("entriesTable").ontimeupdate = repaintPlot;
     repaintPlot();
 }
