@@ -61,29 +61,46 @@
                 </h:panelGrid>
 
                 <h:commandButton id="submitButton" value="Send data" action="#{mainBean.addEntry}" class="btn btn-dark my-2 mx-2">
-                    <f:ajax execute="@form" render="messageR messageY messageX entriesTable" onevent="redraw"/>
+                    <f:ajax execute="@form" render="messageR messageY messageX entriesTable table" onevent="redraw"/>
                 </h:commandButton>
             </h:form>
         </div>
     </div>
 
-    <h:panelGroup id="entriesTable">
-        <h:dataTable value="#{mainBean.entries}" var="entry" class="table table-hover table-dark my-2">
+    <h:panelGroup id="table">
+        <p:dataTable value="#{mainBean.entries}" var="entry"
+                     paginator="true" rows="10"
+                     paginatorTemplate="{CurrentPageReport} {FirstPageLink}
+                     {PreviousPageLink} {PageLinks} {NextPageLink}
+                     {LastPageLink} {RowsPerPageDropdown}"
+                     rowsPerPageTemplate="5,10,15">
+            <p:column headerText="X">
+                <h:outputText value="#{entry.x}"/>
+            </p:column>
+            <p:column headerText="Y">
+                <h:outputText value="#{entry.y}"/>
+            </p:column>
+            <p:column headerText="R">
+                <h:outputText value="#{entry.r}"/>
+            </p:column>
+            <p:column headerText="Result">
+                <h:outputText value="#{entry.result}"/>
+            </p:column>
+        </p:dataTable>
+    </h:panelGroup>
+    <h:panelGroup id="entriesTable" style="display: none">
+        <h:dataTable value="#{mainBean.entries}" var="entry">
             <h:column>
-                <f:facet name="header">X</f:facet>
-                #{entry.x}
+                <f:facet name="header">X</f:facet>#{entry.x}
             </h:column>
             <h:column>
-                <f:facet name="header">Y</f:facet>
-                #{entry.y}
+                <f:facet name="header">Y</f:facet>#{entry.y}
             </h:column>
             <h:column>
-                <f:facet name="header">R</f:facet>
-                #{entry.r}
+                <f:facet name="header">R</f:facet>#{entry.r}
             </h:column>
             <h:column>
-                <f:facet name="header">Result</f:facet>
-                #{entry.result}
+                <f:facet name="header">Result</f:facet>#{entry.result}
             </h:column>
         </h:dataTable>
     </h:panelGroup>
