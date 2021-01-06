@@ -15,7 +15,7 @@ function init() {
     renderer = new THREE.WebGLRenderer( {alpha: true, antialias: true} )
     renderer.setPixelRatio( window.devicePixelRatio )
     renderer.setSize( window.innerWidth, window.innerHeight )
-    renderer.domElement.style.setProperty("position", "absolute", null);
+    renderer.domElement.style.setProperty("position", "absolute", null)
     document.body.prepend( renderer.domElement )
 
     const loader = new THREE.GLTFLoader()
